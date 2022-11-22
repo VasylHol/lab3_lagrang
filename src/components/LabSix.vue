@@ -2,10 +2,9 @@
     <div style="display: flex">
         <line-chart :chartData="chartData" style="width:1000px; height: 200px;" />
         <button @click="calculateByMethodHord">Метод Хорд</button>
-        <button @click="combinedMethod">Комбінований метод</button>
-
+        <button @click="calculatePopolam">Метод пополам</button>
         <div>Уточнене значення за допомогою методів хорд {{ historyOfXn[historyOfXn.length - 1] }}</div>
-        <div>Уточнене значення за допомогою комбінованого методу {{ answerForCombined }}</div>
+        <div>Уточнене значення за допомогою методу пополам {{ answerForPopolam }}</div>
         <div>Кількість ітерацій {{ historyOfDiveded.length }}</div>
     </div>
 </template>
@@ -32,29 +31,61 @@ export default {
             const result = (x - (this.myFunc(x) * (x - a)) / (this.myFunc(x) - this.myFunc(a))).toFixed(4)
             return Number(result)
         },
-
+        calculateNewXForNewton(x) {
+            return x - (this.myFunc(x) / this.pervFunc(x))
+        },
+        calculateNewton() {
+            for(let i =0; i < 10000; i++){
+                console.log(i)
+            }
+        },
         calcFuncDivededByM1(x, m1) {
             const result = Number((Math.abs(this.myFunc(x)) / m1).toFixed(4))
             return result
         },
-        niutonMethod() {
-
-        },
-        combinedMethod() {
-            let xp1 = 1;
-            let xp2 = 0.9;
-            while (xp2 - xp1 > this.E) {
-                let xn1 = xp1 - (xp1 * (xp2 - xp1)) / xp2 - xp1;
-                let xn2 = xp2 - xp2 / xp2;
-                xp1 = xn1;
-                xp2 = xn2;
-            }
-            console.log((xp1 + xp2) / 2);
-            this.answerForCombined = (xp1 + xp2) / 2
-            return (xp1 + xp2) / 2;
-        },
         calculatePopolam() {
+            this.historyOfDiveded = []
+            let a = 0.9
+            let b = 1
+            let v = true
+            let x_ = [(a + b) / 2]
+            console.log('my func ====', this.myFunc(x_[0]))
+            for (let i = 0; i < 10000; i++) {
+                const limits = []
+                if (this.myFunc(x_[i]) > 0 || v) {
+                    if (x_[i - 1]) {
+                        limits.push(...[x_[i], x_[i - 1]])
+                    }
+                    else {
+                        limits.push(...[x_[i], b])
+                    }
+                }
+                if (this.myFunc(x_[i]) < 0) {
+                    if (x_[i - 1]) {
+                        limits.push(...[x_[i - 1], x_[i]])
+                    }
+                    else {
+                        limits.push(...[a, x_[i]])
+                    }
+                }
+                x_.push((limits[1] + limits[0]) / 2)
+                this.historyOfDiveded.push(1)
+                if (Math.abs(limits[1] - limits[0]) < this.E) {
+                    this.answerForPopolam = x_[i + 1]
+                    break
+                }
+            }
+            // if (this.myFunc(x0) > 0) {
+            //     limits.push(x0)
+            //     limits.push(b)
+            // }
+            // else {
+            //     limits.push(a)
+            //     limits.push(x0)
+            // }
+            // for (let i = 0; i < 10000; i++) {
 
+            // }
         },
         calculateByMethodHord() {
             const limits = [0.9, 1]
@@ -88,7 +119,8 @@ export default {
                     }
                 }
             }
-        }
+        },
+
     },
     created() {
         this.chartData = {
@@ -104,6 +136,7 @@ export default {
             },
             E: 0.001,
             answerForCombined: '',
+            answerForPopolam: '',
             chartData1: {
                 datasets: [{
                     data: [{ x: 2, y: 0.92 }, { y: 0.36, x: 6 }, { y: 0.16, x: 7 }, { y: -0.41, x: 10 }]

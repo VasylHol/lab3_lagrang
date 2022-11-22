@@ -23,9 +23,6 @@
         <button @click="button3">Рунге кут 3</button>
         <button @click="button4">Рунге кут 4</button>
     </div>
-    <div>
-        {{ arrX }}
-    </div>
     <div style="display: flex; justify-content: center; margin-top: 70px;">
         <div style="">
             <div class="table">

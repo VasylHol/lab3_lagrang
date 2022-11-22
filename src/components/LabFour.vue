@@ -13,11 +13,6 @@
                 <label for="E">E = </label>
                 <input type="number" v-model="E" id="E" />
             </div>
-            <div>
-                <label for="ITest">I = </label>
-                <input type="number" v-model="ITest" id="ITest" />
-            </div>
-
         </div>
         <div style="margin-top: 30px; margin-bottom: 30px;">
             <button @click="rectangle" style="margin-right:10px">Прямокутники</button>
@@ -38,7 +33,6 @@ export default {
             n: 10000,
             E: 0.001,
             I: 0,
-            ITest: 756250,
         };
     },
     methods: {
@@ -68,7 +62,7 @@ export default {
         },
         trapezium() {
             let s = 0;
-            this.n = 4;
+            this.n = 2;
 
             let h = (this.b - this.a) / this.n;
             for (let i = 0; i < this.n; i++) {
