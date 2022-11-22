@@ -3,8 +3,10 @@
         <line-chart :chartData="chartData" style="width:1000px; height: 200px;" />
         <button @click="calculateByMethodHord">Метод Хорд</button>
         <button @click="calculatePopolam">Метод пополам</button>
+        <button @click="calculateNewton">Метод Ньютона</button>
         <div>Уточнене значення за допомогою методів хорд {{ historyOfXn[historyOfXn.length - 1] }}</div>
         <div>Уточнене значення за допомогою методу пополам {{ answerForPopolam }}</div>
+        <div>Уточнене значення за допомогою методу Ньютона {{ answerForNewton }}</div>
         <div>Кількість ітерацій {{ historyOfDiveded.length }}</div>
     </div>
 </template>
@@ -23,6 +25,9 @@ export default {
         pervFunc(x) {
             return 1 / (2 * Math.sqrt(x)) + (Math.sin(x / 5)) / 5
         },
+        secondPervFunc(x) {
+            (Math.cos(x / 5) / 25) - (1 / (4 * x ** (4 / 3)))
+        },
         calculateNewXB(b, x) {
             const result = (x - (this.myFunc(x) * (b - x)) / (this.myFunc(b) - this.myFunc(x))).toFixed(4)
             return result
@@ -35,8 +40,22 @@ export default {
             return x - (this.myFunc(x) / this.pervFunc(x))
         },
         calculateNewton() {
-            for(let i =0; i < 10000; i++){
-                console.log(i)
+            let a = 0.9
+            let b = 1
+            const x_ = []
+            if (this.myFunc(a) * this.secondPervFunc(a) > 0) {
+                x_.push(a)
+            }
+            else {
+                x_.push(b)
+            }
+            for (let i = 0; i < 10000; i++) {
+                x_.push(this.calculateNewXForNewton(x_[i]))
+                if (Math.abs(x_[i] - x_[i + 1]) < this.E) {
+                    this.answerForNewton = x_[i + 1].toFixed(4)
+                    console.log(this.answerForNewton)
+                    break
+                }
             }
         },
         calcFuncDivededByM1(x, m1) {
@@ -137,6 +156,7 @@ export default {
             E: 0.001,
             answerForCombined: '',
             answerForPopolam: '',
+            answerForNewton: '',
             chartData1: {
                 datasets: [{
                     data: [{ x: 2, y: 0.92 }, { y: 0.36, x: 6 }, { y: 0.16, x: 7 }, { y: -0.41, x: 10 }]
