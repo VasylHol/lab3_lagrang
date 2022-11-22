@@ -1,13 +1,29 @@
 <template>
     <div style="display: flex">
         <line-chart :chartData="chartData" style="width:1000px; height: 200px;" />
-        <button @click="calculateByMethodHord">Метод Хорд</button>
-        <button @click="calculatePopolam">Метод пополам</button>
-        <button @click="calculateNewton">Метод Ньютона</button>
-        <div>Уточнене значення за допомогою методів хорд {{ historyOfXn[historyOfXn.length - 1] }}</div>
-        <div>Уточнене значення за допомогою методу пополам {{ answerForPopolam }}</div>
-        <div>Уточнене значення за допомогою методу Ньютона {{ answerForNewton }}</div>
-        <div>Кількість ітерацій {{ historyOfDiveded.length }}</div>
+    </div>
+    <button @click="calculateByMethodHord">Метод Хорд</button>
+    <button @click="calculatePopolam">Метод пополам</button>
+    <button @click="calculateNewton">Метод Ньютона</button>
+    <button @click="calculateSimpleIteration">Метод простої ітерації</button>
+    <button @click="calculateCombinedMethod">Комбінований метод</button>
+    <div style="display: flex;">
+        <div style="margin-left:20px">
+            <div>Уточнене значення за допомогою методів хорд</div>
+            {{ historyOfXn[historyOfXn.length - 1] }}
+        </div>
+        <div style="margin-left:20px">
+            <div>Уточнене значення за допомогою методу пополам</div>
+            {{ answerForPopolam }}
+        </div>
+        <div style="margin-left:20px">
+            <div>Уточнене значення за допомогою методу Ньютона </div>
+            {{ answerForNewton }}
+        </div>
+        <div style="margin-left:20px">
+            <div>Кількість ітерацій</div>
+            {{ historyOfDiveded.length }}
+        </div>
     </div>
 </template>
 
@@ -40,6 +56,7 @@ export default {
             return x - (this.myFunc(x) / this.pervFunc(x))
         },
         calculateNewton() {
+            this.historyOfDiveded = []
             let a = 0.9
             let b = 1
             const x_ = []
@@ -51,9 +68,57 @@ export default {
             }
             for (let i = 0; i < 10000; i++) {
                 x_.push(this.calculateNewXForNewton(x_[i]))
+                this.historyOfDiveded.push(1)
                 if (Math.abs(x_[i] - x_[i + 1]) < this.E) {
                     this.answerForNewton = x_[i + 1].toFixed(4)
-                    console.log(this.answerForNewton)
+                    break
+                }
+            }
+        },
+        SforIteration(x) {
+            const tau = 0.01
+            const res = x + tau * this.myFunc(x)
+            console.log(res)
+            return res
+        },
+        calculateSimpleIteration() {
+            const a = 0.9
+            const b = 1
+            const x0 = 0.965
+            const x_ = [x0]
+            if (this.myFunc(a) * this.myFunc(b) > 0) {
+                console.log('amogus')
+                return
+            }
+            for (let i = 0; i < 10000; i++) {
+                x_.push(this.SforIteration(x_[i]))
+                if (Math.abs(x_[i] - x_[i + 1]) < this.E) {
+                    console.log('answer ===', x_[i])
+                    break
+                }
+            }
+        },
+        calculateNewXForHordInCombined(x, x_) {
+            const res = (x * this.myFunc(x_) - x_ * this.myFunc(x)) / (this.myFunc(x_) - this.myFunc(x))
+            return res
+        },
+        calculateNewXForNewtonInCombined(x_) {
+            const res = x_ - (this.myFunc(x_) / this.pervFunc(x_))
+            return res
+        },
+        calculateCombinedMethod() {
+            const a = 0.9
+            const b = 1
+            const x = [a]
+            const x_ = [b]
+            for (let i = 0; i < 10000; i++) {
+                let newHordValue = this.calculateNewXForHordInCombined(x[i], x_[i])
+                let newNewtonValue = this.calculateNewXForNewtonInCombined(x_[i])
+                x.push(newHordValue)
+                x_.push(newNewtonValue)
+                if (Math.abs(x[i + 1] - x_[i + 1]) < this.E) {
+                    const res = (x[i + 1] + x_[i + 1]) / 2
+                    console.log('res ====', res)
                     break
                 }
             }
