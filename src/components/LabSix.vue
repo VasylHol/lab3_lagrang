@@ -1,5 +1,5 @@
 <template>
-    <div style="display: flex">
+    <div style="display: flex; justify-content: center;">
         <line-chart :chartData="chartData" style="width:1000px; height: 200px;" />
     </div>
     <button @click="calculateByMethodHord">Метод Хорд</button>
@@ -20,7 +20,19 @@
             <div>Уточнене значення за допомогою методу Ньютона </div>
             {{ answerForNewton }}
         </div>
+    </div>
+    <div style="display: flex; justify-content: center; margin-top: 20px;">
         <div style="margin-left:20px">
+            <div>Уточнене значення за допомогою простої ітерації</div>
+            {{ answerForIteration }}
+        </div>
+        <div style="margin-left:20px">
+            <div>Уточнене значення за допомогою комбінованого методу</div>
+            {{ answerForCombined }}
+        </div>
+    </div>
+    <div style="display: flex ;justify-content: center; margin-top: 20px;">
+        <div>
             <div>Кількість ітерацій</div>
             {{ historyOfDiveded.length }}
         </div>
@@ -77,23 +89,27 @@ export default {
         },
         SforIteration(x) {
             const tau = 0.01
+            // const k = Math.abs(this.pervFunc(x)) / 2
+            // console.log('k ==', k)
+            // const res = x - (this.myFunc(x) / k)
+            // console.log('res ===', res)
             const res = x + tau * this.myFunc(x)
-            console.log(res)
             return res
         },
         calculateSimpleIteration() {
             const a = 0.9
             const b = 1
-            const x0 = 0.965
+            const x0 = a
             const x_ = [x0]
             if (this.myFunc(a) * this.myFunc(b) > 0) {
-                console.log('amogus')
+                console.log('На даному інтервалі рівняння немає коренів')
                 return
             }
             for (let i = 0; i < 10000; i++) {
                 x_.push(this.SforIteration(x_[i]))
                 if (Math.abs(x_[i] - x_[i + 1]) < this.E) {
                     console.log('answer ===', x_[i])
+                    this.answerForIteration = x_[i]
                     break
                 }
             }
@@ -107,6 +123,7 @@ export default {
             return res
         },
         calculateCombinedMethod() {
+            this.historyOfDiveded = []
             const a = 0.9
             const b = 1
             const x = [a]
@@ -116,9 +133,10 @@ export default {
                 let newNewtonValue = this.calculateNewXForNewtonInCombined(x_[i])
                 x.push(newHordValue)
                 x_.push(newNewtonValue)
+                this.historyOfDiveded.push(1)
                 if (Math.abs(x[i + 1] - x_[i + 1]) < this.E) {
                     const res = (x[i + 1] + x_[i + 1]) / 2
-                    console.log('res ====', res)
+                    this.answerForCombined = res
                     break
                 }
             }
@@ -133,7 +151,6 @@ export default {
             let b = 1
             let v = true
             let x_ = [(a + b) / 2]
-            console.log('my func ====', this.myFunc(x_[0]))
             for (let i = 0; i < 10000; i++) {
                 const limits = []
                 if (this.myFunc(x_[i]) > 0 || v) {
@@ -159,19 +176,9 @@ export default {
                     break
                 }
             }
-            // if (this.myFunc(x0) > 0) {
-            //     limits.push(x0)
-            //     limits.push(b)
-            // }
-            // else {
-            //     limits.push(a)
-            //     limits.push(x0)
-            // }
-            // for (let i = 0; i < 10000; i++) {
-
-            // }
         },
         calculateByMethodHord() {
+            this.historyOfDiveded = []
             const limits = [0.9, 1]
             let usableFuncForX = null
             if (this.myFunc(limits[0]) < 0) {
@@ -222,6 +229,7 @@ export default {
             answerForCombined: '',
             answerForPopolam: '',
             answerForNewton: '',
+            answerForIteration: '',
             chartData1: {
                 datasets: [{
                     data: [{ x: 2, y: 0.92 }, { y: 0.36, x: 6 }, { y: 0.16, x: 7 }, { y: -0.41, x: 10 }]
