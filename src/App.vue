@@ -1,15 +1,25 @@
 <template>
-  <img alt="Vue logo" src="./assets/logo.png">
-  <HelloWorld msg="Welcome to Your Vue.js App"/>
+  <div>
+    <!-- <lab-five/> -->
+    <lab-six></lab-six>
+    <!-- <lab-seven /> -->
+    <!-- <lab-four /> -->
+  </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
 
+// import LabFive from './components/LabFive.vue';
+import LabSix from './components/LabSix.vue';
+// import LabSeven from './components/LabSeven.vue';
+// import LabFour from './components/LabFour.vue';
 export default {
   name: 'App',
   components: {
-    HelloWorld
+    // LabFive
+    LabSix
+    // LabSeven
+    // LabFour
   }
 }
 </script>
