@@ -2,7 +2,7 @@
     <div style="display: flex; justify-content: center;">
         <line-chart :chartData="chartData" style="width:1000px; height: 200px;" />
     </div>
-    <button @click="calculateByMethodHord">Метод Хорд</button>
+    <button @click="calculateByMethodHord">Метод хорд</button>
     <button @click="calculatePopolam">Метод пополам</button>
     <button @click="calculateNewton">Метод Ньютона</button>
     <button @click="calculateSimpleIteration">Метод простої ітерації</button>

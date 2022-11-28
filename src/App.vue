@@ -1,8 +1,8 @@
 <template>
   <div>
     <!-- <lab-five/> -->
-    <lab-six></lab-six>
-    <!-- <lab-seven /> -->
+    <!-- <lab-six></lab-six> -->
+    <lab-seven />
     <!-- <lab-four /> -->
   </div>
 </template>
@@ -10,15 +10,15 @@
 <script>
 
 // import LabFive from './components/LabFive.vue';
-import LabSix from './components/LabSix.vue';
-// import LabSeven from './components/LabSeven.vue';
+// import LabSix from './components/LabSix.vue';
+import LabSeven from './components/LabSeven.vue';
 // import LabFour from './components/LabFour.vue';
 export default {
   name: 'App',
   components: {
     // LabFive
-    LabSix
-    // LabSeven
+    // LabSix
+    LabSeven
     // LabFour
   }
 }

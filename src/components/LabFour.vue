@@ -1,25 +1,28 @@
 <template>
-    <div>
+    <div style="display: flex; justify-content: center;">
         <div>
-            <div>
-                <label for="a">а = </label>
+            <div class="col">
+                <label for="a">а</label>
                 <input type="number" v-model="a" id="a" />
             </div>
-            <div>
-                <label for="b">b = </label>
+            <div class="col">
+                <label for="b">b</label>
                 <input type="number" v-model="b" id="b" />
             </div>
-            <div>
-                <label for="E">E = </label>
+            <div class="col">
+                <label for="E">E</label>
                 <input type="number" v-model="E" id="E" />
             </div>
         </div>
-        <div style="margin-top: 30px; margin-bottom: 30px;">
-            <button @click="rectangle" style="margin-right:10px">Прямокутники</button>
-            <button @click="trapezium" style="margin-right:10px">Трапеції</button>
-            <button @click="Simpson" style="margin-right:10px">Сімпсон</button>
+        <div style="margin-left: 20px;">
+            <div style="margin-top: 30px; margin-bottom: 30px;">
+                <button @click="metRectangle" style="margin-right:10px">Прямокутники</button>
+                <button @click="trapezium" style="margin-right:10px">Трапеції</button>
+                <button @click="simpsonMet" style="margin-right:10px">Сімпсон</button>
+            </div>
+            <div>Наближений інтеграл = {{ integral }}, n = {{ n }}</div>
         </div>
-        <div>Наближєний інтеграл = {{ I }}, n = {{ n }}</div>
+
     </div>
 </template>
   
@@ -28,37 +31,58 @@ export default {
     name: "LabFour",
     data() {
         return {
-            a: 5,
-            b: 15,
-            n: 10000,
+            a: 0,
+            b: 0,
             E: 0.001,
-            I: 0,
-        };
+            integral: 0,
+            n: 0,
+        }
     },
     methods: {
-        f(x) {
-            return 5 * (x ** 4)
+        myFunc(x) {
+            return 2 ** x
         },
-        rectangle() {
+        metRectangle() {
             let s = 0;
-            this.n = 4;
-
-            let h = (this.b - this.a) / this.n;
+            let s1 = 0
+            this.n = 2;
+            let h = (this.b - this.a) / this.n
             for (let i = 0; i < this.n; i++) {
-                s += this.f(this.a + h / 2 + i * h) * h;
+                let xi = h / 2 + i * h
+                s += this.myFunc(this.a + xi) * h
             }
-            let s1 = 0;
-
-            while (Math.abs(s - s1) > this.E && this.n < 10000000) {
-                s1 = s;
-                s = 0;
-                this.n *= 2;
+            while (Math.abs(s - s1) > this.E) {
+                s1 = s
+                s = 0
+                this.n *= 2
                 let h = (this.b - this.a) / this.n;
                 for (let i = 0; i < this.n; i++) {
-                    s += this.f(this.a + h / 2 + i * h) * h;
+                    let xi = h / 2 + i * h
+                    s += this.myFunc(this.a + xi) * h;
                 }
             }
-            this.I = s;
+            this.integral = s;
+        },
+        simpsonMet() {
+            let sum1 = 0
+            let sum2 = 0
+            this.n = 4
+            let h = (this.b - this.a) / this.n
+            let x0 = (1 / 2) * this.myFunc(this.a)
+            let x1 = (1 / 2) * this.myFunc(this.b)
+            for (let i = 1; i <= this.n; i++) {
+                let xi = this.a + i * h
+                if (i <= this.n - 1) {
+                    sum1 += this.myFunc(xi);
+                }
+                let xi_1 = this.a + (i - 1) * h
+                sum2 += this.myFunc((xi + xi_1) / 2)
+            }
+            let res = h / 3 * (x0 + sum1 + 2 * sum2 + x1)
+            this.integral = res
+        },
+        miniRect() {
+            this.integral = (this.b - this.a) * (this.myFunc((this.a + this.b) / 2))
         },
         trapezium() {
             let s = 0;
@@ -66,61 +90,32 @@ export default {
 
             let h = (this.b - this.a) / this.n;
             for (let i = 0; i < this.n; i++) {
-                s += this.f(this.a + h / 2 + i * h) * h;
+                s += this.myFunc(this.a + h / 2 + i * h) * h;
             }
             let s1 = 0;
 
-            while (Math.abs(s - s1) > this.E && this.n < 10000000) {
+            while (Math.abs(s - s1) > this.E) {
                 s1 = s
                 s = 0;
                 this.n *= 2;
                 let h = (this.b - this.a) / this.n;
                 for (let i = 1; i < this.n + 1; i++) {
-                    s += ((this.f(this.a + (i - 1) * h) + this.f(this.a + i * h)) * h) / 2;
+                    s += ((this.myFunc(this.a + (i - 1) * h) + this.myFunc(this.a + i * h)) * h) / 2;
                 }
             }
-            this.I = s;
+            this.integral = s;
         },
-        Simpson() {
-            let s = 0;
-            this.n = 4;
-
-            s = (this.f(this.a) + this.f(this.b)) * 0.5
-            let h = (this.b - this.a) / this.n;
-            for (let i = 1; i < this.n; i++) {
-                let x1 = this.a + h * i
-                let x2 = this.a + h * (i - 1)
-                s += this.f(x1) + 2 * this.f((x2 + x1) / 2);
-            }
-            let x = this.a + h * this.n;
-            let x1 = this.a + h * (this.n - 1);
-            s += 2 * this.f((x1 + x) / 2);
-            s *= h / 3
-            let s1 = 0;
-
-            while (Math.abs(s - s1) > this.E && this.n < 10000000) {
-                this.n *= 2;
-                s1 = s
-                s = (this.f(this.a) + this.f(this.b)) * 0.5
-                let h = (this.b - this.a) / this.n;
-                for (let i = 1; i < this.n; i++) {
-                    let x1 = this.a + h * i
-                    let x2 = this.a + h * (i - 1)
-                    s += this.f(x1) + 2 * this.f((x2 + x1) / 2);
-                }
-                let x = this.a + h * this.n;
-                let x1 = this.a + h * (this.n - 1);
-                s += 2 * this.f((x1 + x) / 2);
-                s *= h / 3
-            }
-            this.I = s;
-        }
-    },
-    computed: {
-    },
-};
+    }
+}
+    
 </script>
 <style>
+.col {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+}
+
 .table {
     display: flex;
 }

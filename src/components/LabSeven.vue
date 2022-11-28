@@ -18,10 +18,10 @@
         </div>
     </div>
     <div>
-        <button @click="button1">Ейлер</button>
-        <button @click="button2">Рунге кут 2</button>
-        <button @click="button3">Рунге кут 3</button>
-        <button @click="button4">Рунге кут 4</button>
+        <button @click="calculateEuler">Ейлер</button>
+        <button @click="calculateRunne2">Рунге кут 2</button>
+        <button @click="calculateRunne3">Рунге кут 3</button>
+        <button @click="calculateRunne4">Рунге кут 4</button>
     </div>
     <div style="display: flex; justify-content: center; margin-top: 70px;">
         <div style="">
@@ -31,12 +31,17 @@
                 </div>
             </div>
             <div class="table">
-                <div v-for="(el, id) in arrY" :key="id" class="cell width">
+                <div v-for="(el, id) in arrYF" :key="id" class="cell width">
                     {{ el.toFixed(4) }}
                 </div>
             </div>
             <div class="table">
                 <div v-for="(el, id) in arrYf_Y" :key="id" class="cell width">
+                    {{ isNaN(el) ? 0 : Math.abs(el.toFixed(4)) }}
+                </div>
+            </div>
+            <div class="table">
+                <div v-for="(el, id) in arrX" :key="id" class="cell width">
                     {{ isNaN(el) ? 0 : el.toFixed(4) }}
                 </div>
             </div>
@@ -60,84 +65,67 @@ export default {
         };
     },
     methods: {
-        f(x, y) {
-            return x * y ** 3 - y;
+        myFunc(x, y) {
+            return x * y ** 3 - y
         },
-        _y(x) {
+        y(x) {
             return (1) / Math.sqrt(0.5 * Math.E ** (2 * x) + x + 0.5);
         },
+        calculateEuler() {
+            this.arrX = [this.x0]
+            this.arrY = [this.y0]
+            for (let i = 1; i < this.n + 1; i++) {
+                let funcRes = this.myFunc(this.arrX[i - 1], this.arrY[i - 1])
+                this.arrX[i] = this.arrX[0] + this.h * i;
+                console.log('arrX i', this.arrX[i])
+                this.arrY[i] = this.arrY[i - 1] + this.h * this.myFunc(this.arrX[i - 1] + this.h / 2, this.arrY[i - 1] + funcRes * this.h / 2)
+            }
+        },
         runne2(x, y) {
-            let k1 = this.f(x, y);
-            let k2 = this.f(x + this.h / 2, y + k1 * (this.h / 2));
-            return y + k2 * this.h;
+            let k1 = this.myFunc(x, y)
+            let k2 = this.myFunc(x + this.h / 2, y + k1 * this.h / 2)
+            return y + k2 * this.h
         },
         runne3(x, y) {
-            let k1 = this.f(x, y);
-            let k2 = this.f(x + this.h / 3, y + k1 * (this.h / 3));
-            let k3 = this.f(x + (2 * this.h) / 3, y + 2 * k2 * (this.h / 3));
+            let k1 = this.myFunc(x, y)
+            let k2 = this.myFunc(x + this.h / 3, y + k1 * this.h / 3)
+            let k3 = this.myFunc(x + (2 / 3) * this.h, y + (2 / 3) * this.h * k2)
             return y + ((k1 + 3 * k3) / 4) * this.h;
         },
         runne4(x, y) {
-            let k1 = this.f(x, y);
-            let k2 = this.f(x + this.h / 2, y + k1 * (this.h / 2));
-            let k3 = this.f(x + this.h / 2, y + k2 * (this.h / 2));
-            let k4 = this.f(x + this.h, y + k3 * this.h);
+            let k1 = this.myFunc(x, y);
+            let k2 = this.myFunc(x + this.h / 2, y + k1 * (this.h / 2));
+            let k3 = this.myFunc(x + this.h / 2, y + k2 * (this.h / 2));
+            let k4 = this.myFunc(x + this.h, y + k3 * this.h);
 
             return y + ((k1 + 2 * k2 + 2 * k3 + k4) / 6) * this.h;
         },
-        button1() {
-            this.arrX = [this.x0];
-            this.arrY = [this.y0];
-            let y0 = this.y0;
-            let x0 = this.x0;
+
+        calculateRunne2() {
+            this.arrX = [this.x0]
+            this.arrY = [this.y0]
             for (let i = 1; i < this.n + 1; i++) {
-                let fi = this.f(x0, y0);
-                let y1 = y0 + this.h * this.f(x0 + this.h / 2, y0 + fi * (this.h / 2));
-                x0 = this.x0 + this.h * i;
-                y0 = y1;
-                this.arrX.push(x0);
-                this.arrY.push(y0);
+                this.arrY[i] = this.runne2(this.arrX[i - 1], this.arrY[i - 1]);
+                this.arrX[i] = this.arrX[0] + this.h * i
             }
         },
-        button2() {
-            this.arrX = [this.x0];
-            this.arrY = [this.y0];
-            let y0 = this.y0;
-            let x0 = this.x0;
+        calculateRunne3() {
+            this.arrX = [this.x0]
+            this.arrY = [this.y0]
             for (let i = 1; i < this.n + 1; i++) {
-                let y1 = this.runne2(x0, y0);
-                x0 = this.x0 + this.h * i;
-                y0 = y1;
-                this.arrX.push(x0);
-                this.arrY.push(y0);
+                this.arrY[i] = this.runne3(this.arrX[i - 1], this.arrY[i - 1]);
+                this.arrX[i] = this.arrX[0] + this.h * i
             }
         },
-        button3() {
-            this.arrX = [this.x0];
-            this.arrY = [this.y0];
-            let y0 = this.y0;
-            let x0 = this.x0;
+        calculateRunne4() {
+            this.arrX = [this.x0]
+            this.arrY = [this.y0]
             for (let i = 1; i < this.n + 1; i++) {
-                let y1 = this.runne3(x0, y0);
-                x0 = this.x0 + this.h * i;
-                y0 = y1;
-                this.arrX.push(x0);
-                this.arrY.push(y0);
+                this.arrY[i] = this.runne4(this.arrX[i - 1], this.arrY[i - 1]);
+                this.arrX[i] = this.arrX[0] + this.h * i
             }
-        },
-        button4() {
-            this.arrX = [this.x0];
-            this.arrY = [this.y0];
-            let y0 = this.y0;
-            let x0 = this.x0;
-            for (let i = 1; i < this.n + 1; i++) {
-                let y1 = this.runne4(x0, y0);
-                x0 = this.x0 + this.h * i;
-                y0 = y1;
-                this.arrX.push(x0);
-                this.arrY.push(y0);
-            }
-        },
+        }
+
     },
     computed: {
         h() {
@@ -150,11 +138,11 @@ export default {
         },
         arrYF() {
             return this.arrXF
-                .map((el) => this._y(el))
+                .map((el) => this.y(el))
         },
         arrYf_Y() {
             return this.arrXF
-                .map((el) => this._y(el))
+                .map((el) => this.y(el))
                 .map((el, id) => el - this.arrY[id]);
         }
     },
